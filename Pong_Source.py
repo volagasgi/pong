@@ -6,8 +6,8 @@ import pygame
 # import random
 
 class Player1(pygame.sprite.Sprite):                                                                      # Κλάση Player1 
-    def __init__(self, all_sprites):                                                                      # Το δεύτερο arg είναι το sprite group
-        super().__init__(all_sprites)                                                                     # Αρχικοποίηση μητρικής κλάσης
+    def __init__(self, all_sprites, all_players):                                                         # Το δεύτερο arg είναι το sprite group
+        super().__init__(all_sprites, all_players)                                                        # Αρχικοποίηση μητρικής κλάσης
         self.image = pygame.image.load('C:/Users/Admin/Desktop/pong/Player1/player1.png').convert_alpha() # Surface Player1
         self.rect = self.image.get_frect(midleft=(-26, screen_height/2))                                  # Rectangle Player1
         self.direction = pygame.math.Vector2(0,0)                                                         # Αρχικοποίηση κατεύθυνσης με [0,0]
@@ -20,8 +20,8 @@ class Player1(pygame.sprite.Sprite):                                            
         self.rect.center += self.direction*self.speed*dt                                                  # Αλλαγή θέσης
 
 class Player2(pygame.sprite.Sprite):                                                                      # Κλάση Player2
-    def __init__(self, all_sprites):                                                                      # Το δεύτερο arg είναι το sprite group
-        super().__init__(all_sprites)                                                                     # Αρχικοποίηση μητρικής κλάσης
+    def __init__(self, all_sprites, all_players):                                                         # Το δεύτερο arg είναι το sprite group
+        super().__init__(all_sprites, all_players)                                                        # Αρχικοποίηση μητρικής κλάσης
         self.image = pygame.image.load('C:/Users/Admin/Desktop/pong/Player2/player2.png').convert_alpha() # Surface Player2
         self.rect = self.image.get_frect(midright=(screen_width + 25, screen_height/2))                   # Rectangle Player2
         self.direction = pygame.math.Vector2()                                                            # Αρχικοποίηση κατεύθυνσης με [0,0]
@@ -64,9 +64,10 @@ pygame.display.set_icon(pygame.image.load('C:\\Users\\Admin\\Desktop\\pong\\Imag
 background_image = pygame.image.load('C:/Users/Admin/Desktop/pong/Background/background.png').convert() # Background
 clock = pygame.time.Clock()                                                                             # fps
 
-all_sprites = pygame.sprite.Group()                # Δημιουργία sprite group
-player1 = Player1(all_sprites)                     # Instance της κλάσης του player1
-player2 = Player2(all_sprites)                     # Instance της κλάσης του player2
+all_sprites = pygame.sprite.Group()                # Δημιουργία sprite group για όλα τα sprites
+all_players = pygame.sprite.Group()                # Δημιουργία sprite group για παίχτες
+player1 = Player1(all_sprites,all_players)         # Instance της κλάσης του player1
+player2 = Player2(all_sprites,all_players)         # Instance της κλάσης του player2
 ball = Ball(all_sprites)                           # Instance της κλάσης της μπάλας
 
 # n = random.randint(1, 2)    # Τυχαία επιλογή κατεύθυνσης της μπάλας
@@ -81,6 +82,7 @@ while running:                           # Κύκλος του παιχνιδι�
             running = False
  
     all_sprites.update(dt)                                # update
+    print(bool(pygame.sprite.spritecollide(ball, all_players, False)))  # Έλεγχος collision
 
     display_surface.blit(background_image, (0,0))         # Εμφάνιση background
     all_sprites.draw(display_surface)                     # Εμφάνιση των sprites
@@ -99,3 +101,5 @@ else:
 # Να δω αν μπορώ να χρησιμοποιήσω inheritance για players  με μια μητρικη κλαση "Player()"
 # Να κάνω normalize() τη κατεύθυνση της μπάλας; - Μάλλον όχι...
 # Να προσθέσω όριο για να μην βγαίνουν οι παίχτες έξω από την οθόνη.
+# Μπορώ να κάνω troll pong που θα πρέπει να αποφύγεις την μπάλα, γιατί θα διαγράφεται η ρακέτα.
+# Μπορώ να κάνω μενού με pong variants.
