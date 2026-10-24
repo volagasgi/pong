@@ -40,8 +40,22 @@ class Ball(pygame.sprite.Sprite):                                               
         self.rect = self.image.get_frect(center=(screen_width/2, screen_height/2))                        # Rectangle μπάλας
         self.direction = pygame.math.Vector2(1,-1)                                                        # Αρχικοποίηση κατεύθυνσης με [1,-1]
         self.speed = 250                                                                                  # Αρχικοποίηση ταχύτητας
+        # cooldown
+        self.collided = False                                                                             # Αρχικοποίηση για να μπει στο if
+        self.collision_time = 0                                                                           # Αρχικοποίηση collision_time
+        self.cooldown_duration = 1000                                                                     # Διάρκεια cooldown
 
-    def update(self, dt):                                                                                 
+    def collision_timer(self):                                                                            # Μέθοδος που δέχεται τον τωρινό χρόνο
+        if self.collided:
+            current_time = pygame.time.get_ticks()
+            if current_time >= self.collision_time + self.cooldown_duration: self.collided = False        # Αν έχει περάσει το cooldown ορίζει ξανά το collided = False
+
+    def update(self, dt):
+        self.collision_timer()                                                                            # Καλεί τη μέθοδο collision_timer
+        if bool(pygame.sprite.spritecollide(ball, all_players, False)) and not self.collided:             # Έλεγχος γιά σύγκρουση μπάλας με παίχτη
+            self.direction.x *= -1                                                                        # Αλλαγή κατεύθυνσης σε περίπτωση σύγκρουσης
+            self.collided = True                                                                          # Έγινε η σύγκρουση
+            self.collision_time = pygame.time.get_ticks()                                                 # Δέχεται την χρονική στιγμή της σύγκρουσης
         if self.rect.left <= 0:                                                                           # Αν ακουμπάει στο αριστερό άκρο
             self.rect.left = 0                                                                            # Τοποθετεί την άκρη της μπάλας στην άκρη της οθόνης (για αποφυγή προβλημάτων)
             self.direction.x *= -1                                                                        # Αλλαγή κατεύθυνσης
@@ -82,7 +96,6 @@ while running:                           # Κύκλος του παιχνιδι�
             running = False
  
     all_sprites.update(dt)                                # update
-    print(bool(pygame.sprite.spritecollide(ball, all_players, False)))  # Έλεγχος collision
 
     display_surface.blit(background_image, (0,0))         # Εμφάνιση background
     all_sprites.draw(display_surface)                     # Εμφάνιση των sprites
