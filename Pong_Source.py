@@ -9,9 +9,10 @@ class Player1(pygame.sprite.Sprite):                                            
     def __init__(self, all_sprites, all_players):                                                         # Το δεύτερο arg είναι το sprite group
         super().__init__(all_sprites, all_players)                                                        # Αρχικοποίηση μητρικής κλάσης
         self.image = pygame.image.load('C:/Users/Admin/Desktop/pong/Player1/player1.png').convert_alpha() # Surface Player1
-        self.rect = self.image.get_frect(midleft=(-26, screen_height/2))                                  # Rectangle Player1
+        self.rect = self.image.get_frect(midleft=(0, screen_height/2))                                    # Rectangle Player1
         self.direction = pygame.math.Vector2(0,0)                                                         # Αρχικοποίηση κατεύθυνσης με [0,0]
         self.speed = 200                                                                                  # Αρχικοποίηση ταχύτητας
+        self.score = 0                                                                                    # Αρχικοποίηση σκορ Player1
 
     def update(self, dt):
         keys = pygame.key.get_pressed()                                                                   # Είσοδος πλήκτρων
@@ -23,9 +24,10 @@ class Player2(pygame.sprite.Sprite):                                            
     def __init__(self, all_sprites, all_players):                                                         # Το δεύτερο arg είναι το sprite group
         super().__init__(all_sprites, all_players)                                                        # Αρχικοποίηση μητρικής κλάσης
         self.image = pygame.image.load('C:/Users/Admin/Desktop/pong/Player2/player2.png').convert_alpha() # Surface Player2
-        self.rect = self.image.get_frect(midright=(screen_width + 25, screen_height/2))                   # Rectangle Player2
+        self.rect = self.image.get_frect(midright=(screen_width, screen_height/2))                        # Rectangle Player2
         self.direction = pygame.math.Vector2()                                                            # Αρχικοποίηση κατεύθυνσης με [0,0]
         self.speed = 200                                                                                  # Αρχικοποίηση ταχύτητας
+        self.score = 0                                                                                    # Αρχικοποίηση σκορ Player2
         
     def update(self, dt):
         keys = pygame.key.get_pressed()                                                                   # Είσοδος πλήκτρων
@@ -57,11 +59,13 @@ class Ball(pygame.sprite.Sprite):                                               
             self.collided = True                                                                          # Έγινε η σύγκρουση
             self.collision_time = pygame.time.get_ticks()                                                 # Δέχεται την χρονική στιγμή της σύγκρουσης
         if self.rect.left <= 0:                                                                           # Αν ακουμπάει στο αριστερό άκρο
-            self.rect.left = 0                                                                            # Τοποθετεί την άκρη της μπάλας στην άκρη της οθόνης (για αποφυγή προβλημάτων)
-            self.direction.x *= -1                                                                        # Αλλαγή κατεύθυνσης
+            player2.score += 1                                                                            # Άυξηση σκορ Player2
+            self.rect.center = (screen_width/2,screen_height/2)                                           # Τοποθετεί την μπάλα στο κέντρο
+            self.direction.x = -1                                                                         # Αλλαγή κατεύθυνσης
         if self.rect.right >= screen_width:                                                               # Όμοια με τα παραπάνω
-            self.rect.right = screen_width
-            self.direction.x *= -1
+            player1.score += 1                                                                            # Άυξηση score Player1
+            self.rect.center = (screen_width/2,screen_height/2)                                           # Τοποθετεί την μπάλα στο κέντρο
+            self.direction.x = 1
         if self.rect.bottom <= 0:                                                                         # Όμοια με τα παραπάνω
             self.rect.bottom = 0
             self.direction.y *= -1
@@ -103,6 +107,8 @@ while running:                           # Κύκλος του παιχνιδι�
 
 pygame.quit()
 print(f'{counter} επαναλήψεις συνολικά.')
+print(f'Player 1: {player1.score}',
+      f'Player 2: {player2.score}')
 '''
 if not_hit:
     n = randint(1, 2)
