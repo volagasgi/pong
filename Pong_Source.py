@@ -18,6 +18,8 @@ class Player1(pygame.sprite.Sprite):                                            
         keys = pygame.key.get_pressed()                                                                   # Είσοδος πλήκτρων
         self.direction.y = int(keys[pygame.K_s] - keys[pygame.K_w])                                       # Αλλαγή κατεύθηνσης ανάλογα με την είσοδο
         # self.direction.normalize() if self.direction else self.direction                                # Αν είχα κίνηση σε 2D κρατάει σταθερή ταχήτητα
+        if self.rect.top <= 0: self.rect.top = 0
+        if self.rect.bottom >= screen_height: self.rect.bottom = screen_height
         self.rect.center += self.direction*self.speed*dt                                                  # Αλλαγή θέσης
 
 class Player2(pygame.sprite.Sprite):                                                                      # Κλάση Player2
@@ -33,7 +35,18 @@ class Player2(pygame.sprite.Sprite):                                            
         keys = pygame.key.get_pressed()                                                                   # Είσοδος πλήκτρων
         self.direction.y = int(keys[pygame.K_DOWN] - keys[pygame.K_UP])                                   # Αλλαγή κατεύθηνσης ανάλογα με την είσοδο
         # self.direction.normalize() if self.direction else self.direction                                # Αν είχα κίνηση σε 2D κρατάει σταθερή ταχήτητα
+        if self.rect.top <= 0: self.rect.top = 0
+        if self.rect.bottom >= screen_height: self.rect.bottom = screen_height
         self.rect.center += self.direction*self.speed*dt                                                  # Αλλαγή θέσης
+
+class Score:                                                                                              # Κλάση Score
+    def __init__(self):                                                                           
+        self.font = pygame.font.SysFont('Bahnschrift', 30)                                                # Ορισμός γραμματοσειράς
+        self.text_color = (255, 255, 255)                                                                 # Χρώμα κειμένου (λευκό)
+
+    def score_render(self, player_score):                                                                 # Μέθοδος που ενημερώνει το σκορ
+        self.text = self.font.render(str(player_score), True, self.text_color)                            # Δημιουργία επιφάνειας κειμένου με το σκορ του παίκτη
+        return self.text                                                                                  # Επιστροφή της επιφάνειας κειμένου
 
 class Ball(pygame.sprite.Sprite):                                                                         # Κλάση μπάλας
     def __init__(self, all_sprites):                                                                      # Το δεύτερο arg είναι το sprite group
@@ -87,6 +100,7 @@ all_players = pygame.sprite.Group()                # Δημιουργία sprite
 player1 = Player1(all_sprites,all_players)         # Instance της κλάσης του player1
 player2 = Player2(all_sprites,all_players)         # Instance της κλάσης του player2
 ball = Ball(all_sprites)                           # Instance της κλάσης της μπάλας
+score = Score()                            # Instance της κλάσης του σκορ
 
 # n = random.randint(1, 2)    # Τυχαία επιλογή κατεύθυνσης της μπάλας
 # not_hit = True              # Αρχικά η μπάλα δεν έχει χτυπήσει κάποιον παίκτη
@@ -103,12 +117,15 @@ while running:                           # Κύκλος του παιχνιδι�
 
     display_surface.blit(background_image, (0,0))         # Εμφάνιση background
     all_sprites.draw(display_surface)                     # Εμφάνιση των sprites
+    score1 = score.score_render(player1.score)            # Ενημέρωση σκορ Player1
+    score2 = score.score_render(player2.score)            # Ενημέρωση σκορ Player2
+    display_surface.blit(score1, (screen_width/2-50, 10)) # Εμφάνιση σκορ Player1
+    display_surface.blit(score2, (screen_width/2+30, 10)) # Εμφάνιση σκορ Player2
     pygame.display.update()                               # Επικαιροποίηση της οθόνης
 
 pygame.quit()
 print(f'{counter} επαναλήψεις συνολικά.')
-print(f'Player 1: {player1.score}',
-      f'Player 2: {player2.score}')
+
 '''
 if not_hit:
     n = randint(1, 2)
@@ -119,6 +136,6 @@ else:
 # !!! Να προσθεσω οταν μπει γκολ να οριζεται not_hit = True και το n=1 ή n=2 αναλογα με τον νικητη !!!
 # Να δω αν μπορώ να χρησιμοποιήσω inheritance για players  με μια μητρικη κλαση "Player()"
 # Να κάνω normalize() τη κατεύθυνση της μπάλας; - Μάλλον όχι...
-# Να προσθέσω όριο για να μην βγαίνουν οι παίχτες έξω από την οθόνη.
+# (Να προσθέσω όριο για να μην βγαίνουν οι παίχτες έξω από την οθόνη.) try one liner!
 # Μπορώ να κάνω troll pong που θα πρέπει να αποφύγεις την μπάλα, γιατί θα διαγράφεται η ρακέτα.
 # Μπορώ να κάνω μενού με pong variants.
